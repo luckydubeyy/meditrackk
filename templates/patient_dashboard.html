@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Patient Dashboard</h1>
+            <p class="text-sm text-gray-600">Track your health inquiries, ML predictions, and doctor consultations.</p>
+        </div>
+        <a href="{% url 'new_consultation' %}" class="bg-brand-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-brand-700 transition flex items-center gap-2 self-start sm:self-auto shadow-sm">
+            <i class="fa-solid fa-plus"></i> New Symptom Check
+        </a>
+    </div>
+
+    <!-- Patient Profile Summary Card -->
+    <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between border-b pb-3 mb-3">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-id-card text-brand-600 text-lg"></i>
+                <h2 class="font-semibold text-gray-900">Patient Medical Profile</h2>
+            </div>
+            <span class="text-xs bg-brand-50 text-brand-700 font-medium px-2.5 py-1 rounded-full border border-brand-100">
+                Verified Patient
+            </span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <div>
+                <span class="text-xs text-gray-400 font-semibold uppercase">Full Name</span>
+                <p class="font-medium text-gray-900">{{ user.get_full_name|default:user.username }}</p>
+            </div>
+            <div>
+                <span class="text-xs text-gray-400 font-semibold uppercase">Age</span>
+                <p class="font-medium text-gray-900">
+                    {% if patient_profile.age %}
+                        {{ patient_profile.age }} years
+                    {% else %}
+                        <span class="text-gray-400 italic">Not specified</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div>
+                <span class="text-xs text-gray-400 font-semibold uppercase">Previous Medical History</span>
+                <p class="font-medium text-gray-800">
+                    {% if patient_profile.previous_medical_history %}
+                        {{ patient_profile.previous_medical_history }}
+                    {% else %}
+                        <span class="text-gray-400 italic">None reported</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultations List -->
+    <div class="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+            <h2 class="font-semibold text-gray-800">Your Consultations</h2>
+            <span class="text-xs text-gray-500">Total: {{ cases.count }}</span>
+        </div>
+
+        {% if cases %}
+            <div class="divide-y divide-gray-100">
+                {% for case in cases %}
+                    <div class="p-6 hover:bg-gray-50 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-gray-900">Case #{{ case.id }}</span>
+                                <span class="text-xs text-gray-400">&bull;</span>
+                                <span class="text-xs text-gray-500">{{ case.created_at|date:"M d, Y - H:i" }}</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 text-sm">
+                                <span class="text-gray-600">Preliminary AI Prediction:</span>
+                                <span class="font-medium text-teal-800 bg-teal-50 border border-teal-100 px-2 py-0.5 rounded text-xs">
+                                    {{ case.predicted_disease }}
+                                    {% if case.prediction_confidence %}
+                                        ({{ case.prediction_confidence }}%)
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% if case.actual_diagnosis %}
+                                <div class="text-sm">
+                                    <span class="text-gray-600">Doctor's Final Diagnosis:</span>
+                                    <span class="font-semibold text-gray-900">{{ case.actual_diagnosis }}</span>
+                                </div>
+                            {% endif %}
+                            <div class="text-xs text-gray-500">
+                                Assigned Doctor: 
+                                {% if case.assigned_doctor %}
+                                    <span class="font-medium text-gray-700">Dr. {{ case.assigned_doctor.get_full_name|default:case.assigned_doctor.username }}</span>
+                                    {% if case.assigned_doctor.doctor_profile.specialization %}
+                                        ({{ case.assigned_doctor.doctor_profile.specialization }})
+                                    {% endif %}
+                                {% else %}
+                                    <span class="italic text-gray-400">Pending Assignment</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                            <div>
+                                {% if case.status == 'Completed' %}
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <i class="fa-solid fa-check"></i> Completed
+                                    </span>
+                                {% elif case.status == 'Assigned' %}
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <i class="fa-solid fa-user-clock"></i> Doctor Reviewing
+                                    </span>
+                                {% else %}
+                                    <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold flex items-center gap-1">
+                                        <i class="fa-solid fa-clock"></i> Pending
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <a href="{% url 'case_detail' case.id %}" class="text-brand-600 font-medium text-sm hover:underline flex items-center gap-1">
+                                View Details <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="p-8 text-center text-gray-500">
+                <i class="fa-solid fa-clipboard-list text-4xl mb-3 text-gray-300"></i>
+                <p>No consultations yet. Start by checking your symptoms!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

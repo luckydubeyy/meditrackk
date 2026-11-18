@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">New Symptom Check</h1>
+        <p class="text-sm text-gray-600">Select all symptoms you are currently experiencing to receive an AI assessment and doctor match.</p>
+    </div>
+
+    <form method="post" class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
+        {% csrf_token %}
+        
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">Select Symptoms</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {% for symptom in symptoms %}
+                    <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                        <input type="checkbox" name="symptoms" value="{{ symptom.id }}" class="h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded">
+                        <span class="text-sm text-gray-700 font-medium">{{ symptom.name }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="p-4 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-0.5"></i>
+            <div>
+                <strong>Medical Disclaimer:</strong> This system uses a machine learning prototype for preliminary informational triage only. It does not replace professional emergency care or definitive medical diagnosis.
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+            <a href="{% url 'patient_dashboard' %}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Cancel</a>
+            <button type="submit" class="px-6 py-2 text-sm font-medium text-white bg-brand-600 rounded-lg hover:bg-brand-700 transition flex items-center gap-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Analyze & Submit Case
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

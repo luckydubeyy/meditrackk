@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="text-center py-16 px-4 sm:px-6 lg:px-8">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-600 text-sm font-medium mb-6">
+        <i class="fa-solid fa-sparkles"></i> AI-Powered Preliminary Triage
+    </div>
+    <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
+        Intelligent Medical Assistant <br class="hidden sm:inline" />
+        <span class="text-brand-600">Connecting Patients & Doctors</span>
+    </h1>
+    <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-600">
+        Enter your symptoms to receive an instant machine-learning based assessment, get matched with an available medical doctor, and track your consultation prescription all in one place.
+    </p>
+
+    <div class="mt-10 flex justify-center gap-4">
+        {% if user.is_authenticated %}
+            {% if user.is_patient %}
+                <a href="{% url 'new_consultation' %}" class="bg-brand-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm hover:bg-brand-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> Start Symptom Check
+                </a>
+                <a href="{% url 'patient_dashboard' %}" class="bg-white border border-gray-300 text-gray-700 font-medium px-6 py-3 rounded-lg hover:bg-gray-50 transition">
+                    View History
+                </a>
+            {% elif user.is_doctor %}
+                <a href="{% url 'doctor_dashboard' %}" class="bg-brand-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm hover:bg-brand-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-stethoscope"></i> Go to Doctor Portal
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'register' %}" class="bg-brand-600 text-white font-medium px-6 py-3 rounded-lg shadow-sm hover:bg-brand-700 transition">
+                Create Account
+            </a>
+            <a href="{% url 'login' %}" class="bg-white border border-gray-300 text-gray-700 font-medium px-6 py-3 rounded-lg hover:bg-gray-50 transition">
+                Sign In
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Feature Cards -->
+    <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <div class="w-12 h-12 bg-teal-50 text-brand-600 flex items-center justify-center rounded-lg mb-4 text-xl">
+                <i class="fa-solid fa-microchip"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">ML Disease Prediction</h3>
+            <p class="text-gray-600 text-sm">Advanced classification model analyses symptom combinations to suggest potential conditions as preliminary information.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 flex items-center justify-center rounded-lg mb-4 text-xl">
+                <i class="fa-solid fa-user-doctor"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Doctor Assignment</h3>
+            <p class="text-gray-600 text-sm">Automatically routes your case to a qualified doctor who can review the triage report and prescribe medications.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+            <div class="w-12 h-12 bg-indigo-50 text-indigo-600 flex items-center justify-center rounded-lg mb-4 text-xl">
+                <i class="fa-solid fa-prescription-bottle-medical"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Digital Prescription</h3>
+            <p class="text-gray-600 text-sm">Access diagnosis details, doctor instructions, and prescribed medications immediately after review.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

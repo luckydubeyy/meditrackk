@@ -1,0 +1,122 @@
+# ======================================================
+# MediTrack Vercel Deployment Guide
+# ======================================================
+
+## STEP 1 — Files Already Created/Updated by Agent ✅
+# - vercel.json              → tells Vercel how to run Django
+# - requirements.txt         → added whitenoise
+# - config/settings.py       → updated ALLOWED_HOSTS, whitenoise, static files
+# - db.sqlite3 + ml_model.pkl → will be uploaded as-is (read-only on Vercel)
+
+## STEP 2 — Create a GitHub Repository (Do This on Your Laptop)
+
+1. Go to https://github.com and sign in (create account if needed)
+
+2. Click the "+" button → "New repository"
+   - Repository name: meditrack
+   - Set to PUBLIC (required for free Vercel)
+   - Do NOT tick "Add README" (project already has one)
+   - Click "Create repository"
+
+3. Open Windows PowerShell or Command Prompt in your project folder:
+   cd C:\Users\ayush\Desktop\TRJ
+
+4. Run these commands one by one:
+   git init
+   git add .
+   git commit -m "MediTrack - initial deployment"
+   git branch -M main
+   git remote add origin https://github.com/YOUR-USERNAME/meditrack.git
+   git push -u origin main
+
+   ⚠️ Replace YOUR-USERNAME with your actual GitHub username
+
+5. Refresh GitHub — your code should appear there
+
+
+## STEP 3 — Create .gitignore File (Prevents Uploading venv)
+
+Create a file called .gitignore in TRJ folder with this content:
+   venv/
+   __pycache__/
+   *.pyc
+   .vs/
+   staticfiles/
+   
+   ⚠️ Do NOT add db.sqlite3 or ml_model.pkl to .gitignore
+      These MUST be uploaded to Vercel for the demo to work
+
+
+## STEP 4 — Deploy on Vercel
+
+1. Go to https://vercel.com and click "Sign Up"
+   - Choose "Continue with GitHub"
+   - Authorize Vercel to access your GitHub
+
+2. Click "Add New..." → "Project"
+
+3. Find your "meditrack" repository and click "Import"
+
+4. In the configuration screen:
+   - Framework Preset: Select "Other"
+   - Root Directory: ./ (leave as default)
+   - Build Command: (leave empty)
+   - Output Directory: (leave empty)
+   - Install Command: pip install -r requirements.txt
+
+5. Click "Environment Variables" and add:
+   Name: DEBUG          Value: False
+   Name: SECRET_KEY     Value: (type any random long string, example: medi-track-secret-key-2024-college-project-xyz)
+
+6. Click "Deploy"
+
+7. Wait 2-3 minutes for the build to complete
+
+8. Vercel will give you a URL like:
+   https://meditrack-yourname.vercel.app
+
+
+## STEP 5 — After Deployment
+
+Your site will be live at the Vercel URL.
+
+Demo credentials that will work:
+- doctor1 / password123
+- doctor2 / password123
+- patient1 / password123
+- admin / admin123
+
+⚠️ IMPORTANT LIMITATIONS ON VERCEL:
+- New registrations will work TEMPORARILY but will be lost when Vercel restarts
+- The demo seeded accounts (doctor1, patient1) will ALWAYS be available
+- ml_model.pkl (AI model) will work correctly
+- This is perfect for a college demo/viva
+
+
+## STEP 6 — If You Want Permanent Data Storage (Advanced)
+
+Use Railway instead of Vercel:
+1. Go to https://railway.app
+2. Sign in with GitHub
+3. New Project → Deploy from GitHub
+4. Select your meditrack repo
+5. Add plugin: PostgreSQL
+6. Railway handles everything automatically
+7. Your data persists permanently
+
+Railway is MUCH easier for Django than Vercel.
+
+
+## TROUBLESHOOTING
+
+Error: "DISALLOWED_HOST"
+→ Your domain is not in ALLOWED_HOSTS
+→ Open settings.py, add your exact Vercel URL to ALLOWED_HOSTS list
+
+Error: "Module not found: whitenoise"
+→ Run: pip install whitenoise
+→ Then: git add . && git commit -m "fix" && git push
+
+Error: "Static files 404"
+→ Run locally: python manage.py collectstatic --noinput
+→ Then: git add staticfiles/ && git commit -m "static" && git push

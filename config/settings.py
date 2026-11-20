@@ -33,8 +33,14 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '.vercel.app',       # all *.vercel.app domains
-    '.now.sh',           # older Vercel domains
+    '.onrender.com',     # all Render domains
+    '.vercel.app',       # all Vercel domains
+    '*',                 # allow all in production/demo
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.vercel.app',
 ]
 
 
